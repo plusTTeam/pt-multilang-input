@@ -1,0 +1,174 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="../paper-tabs/paper-tab.html">
+<link rel="import" href="../paper-tabs/paper-tabs.html">
+<link rel="import" href="../iron-pages/iron-pages.html">
+<link rel="import" href="../paper-input/paper-input.html" async>
+<link rel="import" href="../paper-input/paper-textarea.html" async>
+<link rel="import" href="../wysiwyg-e/wysiwyg-e.html" async>
+<link rel="import" href="../wysiwyg-e/tools/bold.html" async>
+<link rel="import" href="../wysiwyg-e/tools/italic.html" async>
+<link rel="import" href="../wysiwyg-e/tools/underline.html" async>
+<link rel="import" href="../wysiwyg-e/tools/strike.html" async>
+<link rel="import" href="../wysiwyg-e/tools/color.html" async>
+<link rel="import" href="../wysiwyg-e/tools/clear.html" async>
+<link rel="import" href="../wysiwyg-e/tools/code.html" async>
+<link rel="import" href="../wysiwyg-e/tools/link.html" async>
+<link rel="import" href="../wysiwyg-e/tools/image.html" async>
+<link rel="import" href="../wysiwyg-e/tools/audio.html" async>
+<link rel="import" href="../wysiwyg-e/tools/video.html" async>
+<link rel="import" href="../wysiwyg-e/tools/ordered.html" async>
+<link rel="import" href="../wysiwyg-e/tools/unordered.html" async>
+<link rel="import" href="../wysiwyg-e/tools/indent.html" async>
+<link rel="import" href="../wysiwyg-e/tools/outdent.html" async>
+<link rel="import" href="../wysiwyg-e/tools/justify.html" async>
+<link rel="import" href="../wysiwyg-e/tools/heading.html" async>
+<link rel="import" href="../wysiwyg-e/tools/blockquote.html" async>
+
+<dom-module id="pt-multilang-input">
+  <template>
+    <style>
+			:host {
+				display: block;
+
+			}
+			paper-input,paper-textarea{
+				max-width: 50vw;
+			}
+
+			paper-tabs{
+				--paper-tabs-selection-bar-color: white;
+				background:  var(--paper-indigo-500);
+				color: white;
+			}
+
+			wysiwyg-e{
+				width: 100%;
+				min-width: 40vw;
+				min-height: 30vh;
+				--wysiwyg-toolbar-background: var(--paper-indigo-500);
+			}
+		</style>
+
+		<paper-tabs selected="{{selected}}" fit-container >
+			<template is="dom-repeat" items="[[languages]]" as="lang">
+				<paper-tab>
+					[[lang.label]] &nbsp; [[lang.description]]
+				</paper-tab>
+			</template>
+		</paper-tabs>
+		<iron-pages id="ironPages" selected="[[selected]]">
+		</iron-pages>
+  </template>
+
+  <script>
+    /**
+     * `pt-multilang-input`
+     * Simple Multiple Languages Input
+     *
+     * @customElement
+     * @polymer
+     * @demo demo/index.html
+     */
+    class PtMultilangInput extends Polymer.Element {
+      static get is() { return 'pt-multilang-input'; }
+      static get properties(){
+        return {
+        languages: Array,
+        name: String,
+        label: String,
+        selected: String,
+        disabled: Boolean,
+  //		   Types allowed: input, textarea, wysiwyg, tags
+          type:String
+        }
+      }
+  
+      connectedCallback(){
+        super.connectedCallback();
+        this.type = this.type || 'input';
+        this.selected = '0';
+        this.required = this.required || false;
+        Polymer.RenderStatus.afterNextRender(this, () =>{
+          if(this.languages && this.languages.length > 0){
+            let typeElement;
+            switch (this.type.toLowerCase()){
+              case 'textarea':
+            typeElement = "paper-textarea";
+                break;
+          case 'wysiwyg':
+            typeElement = "wysiwyg-e";
+            break;
+          case 'tags':
+            typeElement = "pt-tags-input";
+            break;
+              default:
+            typeElement = "paper-input";
+                break;
+            }
+            this.languages.forEach((lang)=>{
+              let element = document.createElement(typeElement);
+              element.classList.add("inputs");
+              if(this.type.toLowerCase() === 'wysiwyg'){
+            element.appendChild(document.createElement('wysiwyg-tool-bold'));
+            element.appendChild(document.createElement('wysiwyg-tool-italic'));
+            element.appendChild(document.createElement('wysiwyg-tool-underline'));
+            element.appendChild(document.createElement('wysiwyg-tool-strike'));
+            element.appendChild(document.createElement('wysiwyg-tool-color'));
+            element.appendChild(document.createElement('wysiwyg-tool-clear'));
+            element.appendChild(document.createElement('wysiwyg-tool-code'));
+            element.appendChild(document.createElement('wysiwyg-tool-link'));
+            element.appendChild(document.createElement('wysiwyg-tool-image'));
+            element.appendChild(document.createElement('wysiwyg-tool-ordered'));
+            element.appendChild(document.createElement('wysiwyg-tool-unordered'));
+            element.appendChild(document.createElement('wysiwyg-tool-indent'));
+            element.appendChild(document.createElement('wysiwyg-tool-outdent'));
+            element.appendChild(document.createElement('wysiwyg-tool-justify'));
+            element.appendChild(document.createElement('wysiwyg-tool-heading'));
+            element.appendChild(document.createElement('wysiwyg-tool-blockquote'));
+              }
+          element.dataLang = lang.name;
+          element.label = `${this.label} (${lang.description})`;
+          element.required = this.required;
+  
+          if(this.type.toLowerCase() === "textarea"){
+            element.value = '\b';
+            element.rows = 3;
+          }
+          this.$.ironPages.appendChild(element);
+            });
+          }
+        });
+      }
+  
+      get value(){
+        let inputs = this.shadowRoot.querySelectorAll('.inputs');
+        let value = {};
+        inputs.forEach((input) =>{
+          value[input.dataLang] = input.value ? input.value : "";
+        });
+        return value;
+      }
+  
+      set value(value){
+        let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
+        inputs.forEach((input) =>{
+        input.value = value[input.dataLang] ? value[input.dataLang] : "";
+        });
+      }
+  
+      set disabled(value){
+        let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
+        inputs.forEach((input) =>{
+          input.setAttribute('disabled', value);
+          input.disabled = value;
+        });
+      }
+  
+      _hideTabs(){
+        return languages && languages.length > 1 ? false : true;
+      }
+    }
+
+    window.customElements.define(PtMultilangInput.is, PtMultilangInput);
+  </script>
+</dom-module>
