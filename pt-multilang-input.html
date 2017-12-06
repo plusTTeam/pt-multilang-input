@@ -5,6 +5,7 @@
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-input/paper-textarea.html">
 <link rel="import" href="../wysiwyg-e/wysiwyg-e.html">
+<link rel="import" href="../pt-tags-input/pt-tags-input.html">
 <link rel="import" href="../wysiwyg-e/tools/bold.html" async>
 <link rel="import" href="../wysiwyg-e/tools/italic.html" async>
 <link rel="import" href="../wysiwyg-e/tools/underline.html" async>
@@ -36,28 +37,33 @@
 			}
 
 			paper-tabs{
-				--paper-tabs-selection-bar-color: white;
-				background:  var(--paper-indigo-500);
-				color: white;
+				--paper-tabs-selection-bar-color: var(--tabs-color, white);
+				background: var(--tabs-background, var(--paper-indigo-500));
+				color: var(--tabs-color, white);
+        --paper-tabs:{
+          height: 40px;
+        }
 			}
 
 			wysiwyg-e{
 				width: 100%;
 				min-width: 40vw;
 				min-height: 30vh;
-				--wysiwyg-toolbar-background: var(--paper-indigo-500);
+				--wysiwyg-toolbar-background: var(--tabs-background, var(--paper-indigo-500));
 			}
 		</style>
 
-		<paper-tabs selected="{{selected}}" fit-container >
+		<paper-tabs selected="{{selected}}" fit-container>
 			<template is="dom-repeat" items="[[languages]]" as="lang">
 				<paper-tab>
 					[[lang.label]] &nbsp; [[lang.description]]
 				</paper-tab>
 			</template>
-		</paper-tabs>
+    </paper-tabs>
+    
 		<iron-pages id="ironPages" selected="[[selected]]">
-		</iron-pages>
+    </iron-pages>
+    
   </template>
 
   <script>
@@ -129,7 +135,7 @@
           element.dataLang = lang.name;
           element.label = `${this.label} (${lang.description})`;
           element.required = this.required;
-  
+
           if(this.type.toLowerCase() === "textarea"){
             element.value = '\b';
             element.rows = 3;
@@ -162,10 +168,6 @@
           input.setAttribute('disabled', value);
           input.disabled = value;
         });
-      }
-  
-      _hideTabs(){
-        return languages && languages.length > 1 ? false : true;
       }
     }
 
