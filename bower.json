@@ -7,7 +7,10 @@
     "paper-tabs": "PolymerElements/paper-tabs#^2.0.0",
     "paper-input": "PolymerElements/paper-input#^2.0.4",
     "wysiwyg-e": "miztroh/wysiwyg-e#^2.1.0",
-    "iron-pages": "PolymerElements/iron-pages#^2.0.1"
+    "iron-pages": "PolymerElements/iron-pages#^2.0.1",
+    "pt-tags-input": "plusTTeam/pt-tags-input#^1.0.0",
+    "iron-validator-behavior": "PolymerElements/iron-validator-behavior#^2.0.0",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^2.0.0"
   },
   "devDependencies": {
     "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^2.0.0",
