@@ -24,7 +24,6 @@
 <link rel="import" href="../wysiwyg-e/tools/justify.html" async>
 <link rel="import" href="../wysiwyg-e/tools/heading.html" async>
 <link rel="import" href="../wysiwyg-e/tools/blockquote.html" async>
-<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 
 <dom-module id="pt-multilang-input">
@@ -77,7 +76,7 @@
      * @polymer
      * @demo demo/index.html
      */
-    class PtMultilangInput extends Polymer.mixinBehaviors([Polymer.IronValidatableBehavior,Polymer.IronFormElementBehavior],Polymer.Element) {
+    class PtMultilangInput extends Polymer.mixinBehaviors([Polymer.IronValidatableBehavior],Polymer.Element) {
       static get is() { return 'pt-multilang-input'; }
       static get properties(){
         return {
@@ -164,7 +163,11 @@
       set value(value){
         let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
         inputs.forEach((input) =>{
-        input.value = value[input.dataLang] ? value[input.dataLang] : "";
+          try{
+            input.value = value[input.dataLang];
+          }catch(e){
+            input.value = "";
+          }
         });
       }
   
@@ -179,8 +182,12 @@
       validate() {
         let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
         for(let i=0; i < inputs.length; i++){
-          if(!inputs[i].validate())
-            return false;
+          try{
+            if(!inputs[i].validate())
+              return false;
+          }catch(e){
+
+          }
         }
         return true;
       }
