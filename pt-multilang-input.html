@@ -27,26 +27,27 @@
 <link rel="import" href="../iron-validatable-behavior/iron-validatable-behavior.html">
 
 <dom-module id="pt-multilang-input">
-  <template>
-    <style>
+	<template>
+		<style>
 			:host {
 				display: block;
 
 			}
-			paper-input,paper-textarea{
+
+			paper-input, paper-textarea {
 				max-width: 50vw;
 			}
 
-			paper-tabs{
+			paper-tabs {
 				--paper-tabs-selection-bar-color: var(--tabs-color, white);
 				background: var(--tabs-background, var(--paper-indigo-500));
 				color: var(--tabs-color, white);
-        --paper-tabs:{
-          height: 40px;
-        }
+				--paper-tabs: {
+					height: 40px;
+				}
 			}
 
-			wysiwyg-e{
+			wysiwyg-e {
 				width: 100%;
 				min-width: 40vw;
 				min-height: 30vh;
@@ -60,140 +61,135 @@
 					[[lang.label]] &nbsp; [[lang.description]]
 				</paper-tab>
 			</template>
-    </paper-tabs>
-    
+		</paper-tabs>
+
 		<iron-pages id="ironPages" selected="[[selected]]">
-    </iron-pages>
-    
-  </template>
+		</iron-pages>
 
-  <script>
-    /**
-     * `pt-multilang-input`
-     * Simple Multiple Languages Input
-     *
-     * @customElement
-     * @polymer
-     * @demo demo/index.html
-     */
-    class PtMultilangInput extends Polymer.mixinBehaviors([Polymer.IronValidatableBehavior],Polymer.Element) {
-      static get is() { return 'pt-multilang-input'; }
-      static get properties(){
-        return {
-        languages: Array,
-        name: String,
-        label: String,
-        selected: String,
-        disabled: Boolean,
-        required: {
-          type:Boolean,
-          reflect:true
-        },
-  //		   Types allowed: input, textarea, wysiwyg, tags
-          type:String
-        }
-      }
-  
-      connectedCallback(){
-        super.connectedCallback();
-        this.type = this.type || 'input';
-        this.selected = '0';
-        this.required = this.required || false;
-        Polymer.RenderStatus.afterNextRender(this, () =>{
-          if(this.languages && this.languages.length > 0){
-            let typeElement;
-            switch (this.type.toLowerCase()){
-              case 'textarea':
-            typeElement = "paper-textarea";
-                break;
-          case 'wysiwyg':
-            typeElement = "wysiwyg-e";
-            break;
-          case 'tags':
-            typeElement = "pt-tags-input";
-            break;
-              default:
-            typeElement = "paper-input";
-                break;
-            }
-            this.languages.forEach((lang)=>{
-              let element = document.createElement(typeElement);
-              element.classList.add("inputs");
-              if(this.type.toLowerCase() === 'wysiwyg'){
-            element.appendChild(document.createElement('wysiwyg-tool-bold'));
-            element.appendChild(document.createElement('wysiwyg-tool-italic'));
-            element.appendChild(document.createElement('wysiwyg-tool-underline'));
-            element.appendChild(document.createElement('wysiwyg-tool-strike'));
-            element.appendChild(document.createElement('wysiwyg-tool-color'));
-            element.appendChild(document.createElement('wysiwyg-tool-clear'));
-            element.appendChild(document.createElement('wysiwyg-tool-code'));
-            element.appendChild(document.createElement('wysiwyg-tool-link'));
-            element.appendChild(document.createElement('wysiwyg-tool-image'));
-            element.appendChild(document.createElement('wysiwyg-tool-ordered'));
-            element.appendChild(document.createElement('wysiwyg-tool-unordered'));
-            element.appendChild(document.createElement('wysiwyg-tool-indent'));
-            element.appendChild(document.createElement('wysiwyg-tool-outdent'));
-            element.appendChild(document.createElement('wysiwyg-tool-justify'));
-            element.appendChild(document.createElement('wysiwyg-tool-heading'));
-            element.appendChild(document.createElement('wysiwyg-tool-blockquote'));
-              }
-          element.dataLang = lang.name;
-          element.label = `${this.label} (${lang.description})`;
-          element.required = this.required;
+	</template>
 
-          if(this.type.toLowerCase() === "textarea"){
-            element.value = '\b';
-            element.rows = 3;
-          }
-          this.$.ironPages.appendChild(element);
-            });
-          }
-        });
-      }
-  
-      get value(){
-        let inputs = this.shadowRoot.querySelectorAll('.inputs');
-        let value = {};
-        inputs.forEach((input) =>{
-          value[input.dataLang] = input.value ? input.value : "";
-        });
-        return value;
-      }
-  
-      set value(value){
-        let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
-        inputs.forEach((input) =>{
-          try{
-            input.value = value[input.dataLang];
-          }catch(e){
-            input.value = "";
-          }
-        });
-      }
-  
-      set disabled(value){
-        let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
-        inputs.forEach((input) =>{
-          input.setAttribute('disabled', value);
-          input.disabled = value;
-        });
-      }
+	<script>
+	  /**
+	   * `pt-multilang-input`
+	   * Simple Multiple Languages Input
+	   *
+	   * @customElement
+	   * @polymer
+	   * @demo demo/index.html
+	   */
+	  class PtMultilangInput extends Polymer.mixinBehaviors([Polymer.IronValidatableBehavior], Polymer.Element) {
+		static get is(){
+		  return 'pt-multilang-input';
+		}
 
-      validate() {
-        let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
-        for(let i=0; i < inputs.length; i++){
-          try{
-            if(!inputs[i].validate())
-              return false;
-          }catch(e){
+		static get properties(){
+		  return {
+			languages: Array,
+			name: String,
+			label: String,
+			selected: String,
+			disabled: Boolean,
+			required: {
+			  type: Boolean,
+			  reflect: true
+			},
+			//		   Types allowed: input, textarea, wysiwyg, tags
+			type: String
+		  }
+		}
 
-          }
-        }
-        return true;
-      }
-      
-    }
+		connectedCallback(){
+		  super.connectedCallback();
+		  this.type = this.type || 'input';
+		  this.selected = '0';
+		  this.required = this.required || false;
+		  Polymer.RenderStatus.afterNextRender(this, () =>{
+			if (this.languages && this.languages.length > 0) {
+			  let typeElement;
+			  switch (this.type.toLowerCase()) {
+				case 'textarea':
+				  typeElement = "paper-textarea";
+				  break;
+				case 'wysiwyg':
+				  typeElement = "wysiwyg-e";
+				  break;
+				case 'tags':
+				  typeElement = "pt-tags-input";
+				  break;
+				default:
+				  typeElement = "paper-input";
+				  break;
+			  }
+			  this.languages.forEach((lang) =>{
+				let element = document.createElement(typeElement);
+				element.classList.add("inputs");
+				if (this.type.toLowerCase() === 'wysiwyg') {
+				  element.appendChild(document.createElement('wysiwyg-tool-bold'));
+				  element.appendChild(document.createElement('wysiwyg-tool-italic'));
+				  element.appendChild(document.createElement('wysiwyg-tool-underline'));
+				  element.appendChild(document.createElement('wysiwyg-tool-strike'));
+				  element.appendChild(document.createElement('wysiwyg-tool-color'));
+				  element.appendChild(document.createElement('wysiwyg-tool-clear'));
+				  element.appendChild(document.createElement('wysiwyg-tool-code'));
+				  element.appendChild(document.createElement('wysiwyg-tool-link'));
+				  element.appendChild(document.createElement('wysiwyg-tool-image'));
+				  element.appendChild(document.createElement('wysiwyg-tool-ordered'));
+				  element.appendChild(document.createElement('wysiwyg-tool-unordered'));
+				  element.appendChild(document.createElement('wysiwyg-tool-indent'));
+				  element.appendChild(document.createElement('wysiwyg-tool-outdent'));
+				  element.appendChild(document.createElement('wysiwyg-tool-justify'));
+				  element.appendChild(document.createElement('wysiwyg-tool-heading'));
+				  element.appendChild(document.createElement('wysiwyg-tool-blockquote'));
+				}
+				element.dataLang = lang.name;
+				element.label = `${this.label} (${lang.description})`;
+				element.required = this.required;
 
-    window.customElements.define(PtMultilangInput.is, PtMultilangInput);
-  </script>
+				if (this.type.toLowerCase() === "textarea") {
+				  element.value = '\b';
+				  element.rows = 3;
+				}
+				this.$.ironPages.appendChild(element);
+			  });
+			}
+		  });
+		}
+
+		get value(){
+		  let inputs = this.shadowRoot.querySelectorAll('.inputs');
+		  let value = {};
+		  inputs.forEach((input) =>{
+			value[input.dataLang] = input.value ? input.value : "";
+		  });
+		  return value;
+		}
+
+		set value(value){
+		  let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
+		  inputs.forEach((input) =>{
+			input.value = value[input.dataLang] ? value[input.dataLang] : "";
+		  });
+		}
+
+		set disabled(value){
+		  let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
+		  inputs.forEach((input) =>{
+			input.setAttribute('disabled', value);
+			input.disabled = value;
+		  });
+		}
+
+		validate(){
+		  let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
+		  for (let i = 0; i < inputs.length; i++) {
+			if (inputs[i].validate && !inputs[i].validate())
+			  return false;
+		  }
+		  return true;
+		}
+
+	  }
+
+	  window.customElements.define(PtMultilangInput.is, PtMultilangInput);
+	</script>
 </dom-module>
