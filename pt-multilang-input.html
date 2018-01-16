@@ -167,7 +167,11 @@
 		set value(value){
 		  let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
 		  inputs.forEach((input) =>{
-			input.value = value[input.dataLang] ? value[input.dataLang] : "";
+			try {
+			  input.value = value[input.dataLang];
+			} catch (e) {
+			  input.value = "";
+			}
 		  });
 		}
 
@@ -182,8 +186,12 @@
 		validate(){
 		  let inputs = this.shadowRoot.querySelectorAll('#ironPages > *');
 		  for (let i = 0; i < inputs.length; i++) {
-			if (inputs[i].validate && !inputs[i].validate())
-			  return false;
+			try {
+			  if (!inputs[i].validate())
+				return false;
+			} catch (e) {
+
+			}
 		  }
 		  return true;
 		}
